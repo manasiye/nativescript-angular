@@ -7,6 +7,7 @@ import {DatePicker} from "ui/date-picker";
 import {TimePicker} from "ui/time-picker";
 import {ListPicker} from "ui/list-picker";
 import {TextField} from "ui/text-field";
+import {generateSelector} from "nativescript-angular/value-accessors/base-value-accessor";
 import {NumberValueAccessor} from "nativescript-angular/value-accessors/number-value-accessor";
 import {CheckedValueAccessor} from "nativescript-angular/value-accessors/checked-value-accessor";
 import {DateValueAccessor} from "nativescript-angular/value-accessors/date-value-accessor";
@@ -98,7 +99,7 @@ describe("two-way binding via ng-model", () => {
 
     it("converts strings to int selection", () => {
         const accessor = new TestSelectedIndexValueAccessor()
-        
+
         accessor.writeValue(null);
         accessor.ngAfterViewInit();
         assert.strictEqual(0, accessor.view.selectedIndex, "default to 0 on empty")
@@ -140,6 +141,26 @@ describe("two-way binding via ng-model", () => {
         assert.equal("stringified", accessor.view.text);
     });
 })
+
+describe("target selector registration", () => {
+    it("supports uppercase(unchanged) camel tags", () => {
+        assert.include(generateSelector("TextField"), "TextField[ngModel]");
+    });
+    it("supports lowercase camel tags", () => {
+        assert.include(generateSelector("TextField"), "textField[ngModel]");
+    });
+    it("supports kebab case tags", () => {
+        assert.include(generateSelector("TextField"), "text-field[ngModel]");
+    });
+    it("supports formControlName", () => {
+        assert.include(generateSelector("TextField"), "TextField[formControlName]");
+    });
+    it("supports multiple tags", () => {
+        const selector = generateSelector("TextField", "TextView");
+        assert.include(selector, "TextField[ngModel]");
+        assert.include(selector, "TextField[formControlName]");
+    });
+});
 
 function formatDate(date: Date) {
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
