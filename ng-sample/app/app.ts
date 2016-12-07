@@ -6,22 +6,23 @@
 //profiling.start("application-start");
 
 // "nativescript-angular/application" import should be first in order to load some required settings (like globals and reflect-metadata)
-import { 
-    NativeScriptModule, 
-    platformNativeScriptDynamic, 
-    NativeScriptRouterModule, 
+import {
+    NativeScriptModule,
+    platformNativeScriptDynamic,
+    NativeScriptRouterModule,
     NativeScriptFormsModule,
     NativeScriptHttpModule,
-    routerTraceCategory, 
+    NSModuleFactoryLoader,
+    routerTraceCategory,
     rendererTraceCategory,
     listViewTraceCategory,
-    PAGE_FACTORY, 
-    PageFactory, 
+    PAGE_FACTORY,
+    PageFactory,
     PageFactoryOptions,
     onAfterLivesync,
     onBeforeLivesync
 } from "nativescript-angular";
-import { NgModule } from "@angular/core";
+import { NgModule, NgModuleFactoryLoader } from "@angular/core";
 import { Router } from "@angular/router";
 import { Page } from "ui/page";
 import { Color } from "color";
@@ -90,7 +91,11 @@ function makeExampleModule(componentType) {
         entries = componentType.entries;
     }
     entries.push(componentType);
-    let providers = [];
+
+    let providers = [
+        { provide: NgModuleFactoryLoader, useClass: NSModuleFactoryLoader }
+    ];
+
     if (componentType.providers) {
         providers = componentType.providers;
     }
